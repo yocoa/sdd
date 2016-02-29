@@ -7,11 +7,9 @@ Dependencies
 ---
 
 ```
-apt-get install python-dev
-apt-get install python-virtualenv
-apt-get install libblas-dev liblapack-dev
-apt-get install libjpeg8-dev
-apt-get install libfreetype6-dev
+apt-get install python-dev python-virtualenv
+apt-get install libblas-dev liblapack-dev libatlas-base-dev gfortran #scipy
+apt-get install libjpeg8-dev libfreetype6-dev #pillow
 ```
 
 Installation
