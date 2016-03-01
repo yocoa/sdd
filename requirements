@@ -5,4 +5,4 @@ numpy==1.10.4
 python-whois==0.5.2
 scipy==0.17.0
 wsgiref==0.1.2
-https://bitbucket.org/zhangxiaoyang/pywhois/get/tip.zip#egg=pywhois
+git+https://bitbucket.org/zhangxiaoyang/pywhois

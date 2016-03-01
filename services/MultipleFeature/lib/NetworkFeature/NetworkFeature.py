@@ -34,7 +34,6 @@ class _NetworkFeature(object):
             self._reg_date,
             self._org,
         )
-        funcs = (self._ns_as,)
         if not string:
             return [-1 for i in range(len(funcs))]
         for f in funcs:
