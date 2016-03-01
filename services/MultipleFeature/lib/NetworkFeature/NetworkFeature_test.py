@@ -2,10 +2,10 @@
 # encoding: utf-8
 
 import unittest
-import NetworkFeature as NF
+from NetworkFeature import _NetworkFeature
 
 class TestNetworkFeature(unittest.TestCase):
     
     def test_get_feature(self):
-        d = 'qq.com'
-        print NF.get_feature(d)
+        n = _NetworkFeature('google.com')
+        self.assertTrue(n.get_feature())

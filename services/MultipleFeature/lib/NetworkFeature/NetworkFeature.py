@@ -7,7 +7,6 @@ import time
 
 import dns.query
 import numpy
-from whois import NICClient as WhoisClient
 
 def get_feature(string):
     cleaned_string = string.strip('.')
@@ -15,14 +14,18 @@ def get_feature(string):
 
 class _NetworkFeature(object):
     nameserver = '223.5.5.5'
-    whoishost = 'whois.cymru.com'
+    host = 'origin.asn.cymru.com'
     feature = {}
-    whois_cache = None
 
-    def __init__(self, string):
-        self.client = WhoisClient()
-        self.resp_cache = self._make_response(string)
+    def __init__(self, domain):
+        self.domain = domain
+        self.cache_a = self._make_a_response(domain)
+        self.cache_ns = self._make_ns_response(domain)
+        for i in self.cache_a.answer:
+            ip = i.to_text().split(' ')[-1]
+            self.cache_as = self._make_as_response(ip)
 
+    def get_feature(self):
         funcs = (
             self._ttl_mean,
             self._a,
@@ -34,89 +37,95 @@ class _NetworkFeature(object):
             self._reg_date,
             self._org,
         )
-        if not string:
+        if not self.domain:
             return [-1 for i in range(len(funcs))]
         for f in funcs:
             f()
-
-    def get_feature(self):
         return self.feature
 
-    def _make_response(self, string):
-        domain = dns.name.from_text(string)
-        request = dns.message.make_query(domain, dns.rdatatype.ANY)
-        response = dns.query.udp(request, self.nameserver)
-        return response
+    def _make_a_response(self, domain):
+        d = dns.name.from_text(domain)
+        req = dns.message.make_query(d, dns.rdatatype.A)
+        resp = dns.query.udp(req, self.nameserver)
+        return resp
+
+    def _make_ns_response(self, domain):
+        d = dns.name.from_text(domain)
+        req = dns.message.make_query(d, dns.rdatatype.NS)
+        resp = dns.query.udp(req, self.nameserver)
+        return resp
+
+    def _make_as_response(self, ip):
+        d = dns.name.from_text('%s.%s' % (ip, self.host))
+        req = dns.message.make_query(d, dns.rdatatype.TXT)
+        resp = dns.query.udp(req, self.nameserver)
+        return resp
 
     def _reset_nameserver(self, nameserver):
         self.nameserver = nameserver
 
     def _ttl_mean(self):
         self.feature['_ttl_mean'] = numpy.mean(
-            [int(i.to_text().split(' ')[1]) for i in self.resp_cache.answer if 'IN A' in i.to_text()])
+            [int(i.to_text().split(' ')[1]) for i in self.cache_a.answer])
+        return self.feature['_ttl_mean']
 
     def _a(self):
-        for i in self.resp_cache.answer:
-            if 'IN A' in i.to_text():
-                self.feature['_a'] = i.to_text().split(' ')[-1]
-                return
-        self.feature['_a'] = ''
+        for i in self.cache_a.answer:
+            self.feature['_a'] = i.to_text().split(' ')[-1]
+            return self.feature['_a']
+        self.feature['_a'] = -1
+        return self.feature['_a']
 
     def _a_seg(self):
-        query = '-v %s' % self.feature['_a']
-        whois_text = self.client.whois(query, self.whoishost, self.client.WHOIS_QUICK, False, 20)
-        if not whois_text.strip() or 'Error' in whois_text:
-            self.feature['_a_seg'] = ''
-            return
-        self.whois_cache = whois_text
-        self.feature['_a_seg'] = self.whois_cache.split('\n')[1].split('|')[2].strip()
+        for i in self.cache_as.answer:
+            self.feature['_a_seg'] = i.to_text().split('"')[1].split('|')[1].strip()
+            return self.feature['_a_seg']
+        self.feature['_a_seg'] = -1
+        return self.feature['_a_seg']
 
     def _a_as(self):
-        if self.whois_cache:
-            self.feature['_a_as'] = self.whois_cache.split('\n')[1].split('|')[0].strip()
-            return
-        self.feature['_a_as'] = ''
+        for i in self.cache_as.answer:
+            self.feature['_a_as'] = i.to_text().split('"')[1].split('|')[0].strip()
+            return self.feature['_a_as']
+        self.feature['_a_as'] = -1
+        return self.feature['_a_as']
         
 
     def _ns(self):
-        for i in self.resp_cache.answer:
-            if 'IN NS' in i.to_text():
-                self.feature['_ns'] = i.to_text().split(' ')[-1]
-                return
-        self.feature['_ns'] = ''
+        for i in self.cache_ns.answer:
+            self.feature['_ns'] = i.to_text().split(' ')[-1]
+            return self.feature['_ns']
+        self.feature['_ns'] = -1
+        return self.feature['_ns']
 
     def _ns_as(self):
-        for i in self.resp_cache.answer:
-            if 'IN NS' in i.to_text():
-                string = i.to_text().split(' ')[-1] 
-                temp_resp = self._make_response(string)
-                for j in temp_resp.answer:
-                    if 'IN A' in j.to_text():
-                        ip = j.to_text().split(' ')[-1]
-                        query = '-v %s' % ip
-                        whois_text = self.client.whois(query, self.whoishost, self.client.WHOIS_QUICK, False, 20)
-                        if not whois_text.strip() or 'Error' in whois_text:
-                            continue
-                        self.feature['_ns_as'] = whois_text.split('\n')[1].split('|')[0].strip()
-                        return
-        self.feature['_ns_as'] = ''
+        for i in self.cache_ns.answer:
+            domain = i.to_text().split(' ')[-1] 
+            temp1 = self._make_a_response(domain)
+            for j in temp1.answer:
+                ip = j.to_text().split(' ')[-1]
+                temp2 = self._make_as_response(ip)
+                for k in temp2.answer:
+                    self.feature['_ns_as'] = k.to_text().split('"')[1].split('|')[0].strip()
+                    return self.feature['_ns_as']
+        self.feature['_ns_as'] = -1
+        return self.feature['_ns_as']
 
     def _ns_ttl_mean(self):
-        if self.whois_cache:
-            self.feature['_ns_ttl_mean'] = numpy.mean(
-                [int(i.to_text().split(' ')[1]) for i in self.resp_cache.answer if 'IN NS' in i.to_text()])
-            return
-        self.feature['_ns_ttl_mean'] = ''
+        self.feature['_ns_ttl_mean'] = numpy.mean(
+            [int(i.to_text().split(' ')[1]) for i in self.cache_ns.answer])
+        return self.feature['_ns_ttl_mean']
 
     def _reg_date(self):
-        if self.whois_cache:
-            self.feature['_reg_date'] = self.whois_cache.split('\n')[1].split('|')[5].strip()
-            return
-        self.feature['_reg_date'] = ''
+        for i in self.cache_as.answer:
+            self.feature['_reg_date'] = i.to_text().split('"')[1].split('|')[4].strip()
+            return self.feature['_reg_date']
+        self.feature['_reg_date'] = -1
+        return self.feature['_reg_date']
 
     def _org(self):
-        if self.whois_cache:
-            self.feature['_org'] = self.whois_cache.split('\n')[1].split('|')[3].strip()
-            return
-        self.feature['_org'] = ''
-
+        for i in self.cache_as.answer:
+            self.feature['_org'] = i.to_text().split('"')[1].split('|')[2].strip()
+            return self.feature['_org']
+        self.feature['_org'] = -1
+        return self.feature['_org']

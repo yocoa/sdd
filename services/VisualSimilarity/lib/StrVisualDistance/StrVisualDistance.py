@@ -5,7 +5,7 @@ import sys
 sys.path.append('../CharVisualDistanceCache')
 import CharVisualDistanceCache
 
-ALPHA = 0.9
+ALPHA = 0.99997
 C = CharVisualDistanceCache.get_cache()
 
 def set_alpha(alpha):
