@@ -11,22 +11,10 @@ import CharVisualDistance
 _CHARS = [''] + [chr(i) for i in range(97, 97 + 26)] + [str(i) for i in range(0, 10)] + ['.', '-']
 _CURRENT_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 _CACHE_FILE = os.path.join(_CURRENT_FILE_PATH, 'cache')
-
-def _reset_chars_only_for_unittest(chars):
-    global _CHARS
-    _CHARS = chars
+_CACHE = None
 
 def get_cache():
-    cache = None
-    if os.path.exists(_CACHE_FILE):
-        with open(_CACHE_FILE, 'r') as f:
-            cache = json.load(f)
-    else:
-        temp_cache = _build_cache()
-        cache = _normal_cache(temp_cache)
-        with open(_CACHE_FILE, 'w') as f:
-            json.dump(cache, f)
-    return cache
+    return _CACHE
 
 def _build_cache():
     cache = {}
@@ -59,3 +47,17 @@ def _normal_cache(temp_cache):
             else:
                 cache[c1][c2] = temp_cache[c1][c2] / max_distance
     return cache
+
+def _main():
+    global _CACHE
+    if os.path.exists(_CACHE_FILE):
+        with open(_CACHE_FILE, 'r') as f:
+            _CACHE = json.load(f)
+    else:
+        print 'Building cache... Please wait'
+        temp_cache = _build_cache()
+        _CACHE = _normal_cache(temp_cache)
+        with open(_CACHE_FILE, 'w') as f:
+            json.dump(_CACHE, f)
+
+_main()
