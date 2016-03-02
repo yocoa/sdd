@@ -6,6 +6,7 @@ Modules=(\
     LexicalFeature\
     NetworkFeature\
     Characterizer\
+    Classifier\
 )
 
 num=1

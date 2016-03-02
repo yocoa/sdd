@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import os
 import sys
-sys.path.append('../CharVisualDistanceCache')
+_CUR_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(_CUR_DIR + '/../CharVisualDistanceCache')
 import CharVisualDistanceCache
 
 ALPHA = 0.99997

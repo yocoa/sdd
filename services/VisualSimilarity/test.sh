@@ -7,6 +7,7 @@ Modules=(\
     ImageToVector\
     CharVisualDistance\
     CharVisualDistanceCache\
+    MinVisualDistance\
 )
 
 num=1

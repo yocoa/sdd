@@ -5,7 +5,8 @@ import os
 import json
 
 import sys
-sys.path.append('../CharVisualDistance')
+_CUR_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(_CUR_DIR + '/../CharVisualDistance')
 import CharVisualDistance
 
 _CHARS = [''] + [chr(i) for i in range(97, 97 + 26)] + [str(i) for i in range(0, 10)] + ['.', '-']

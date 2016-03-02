@@ -6,11 +6,12 @@ import json
 
 from simhash import Simhash, SimhashIndex 
 import sys
-sys.path.append('../StrVisualDistance')
+_CUR_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(_CUR_DIR + '/../StrVisualDistance')
 import StrVisualDistance
 
 BETA = 0.0356
-_TRAIN_FILE = os.path.dirname(os.path.abspath(__file__)) + '/../../data/train'
+_TRAIN_FILE = _CUR_DIR + '/../../data/train'
 with open(_TRAIN_FILE, 'r') as f:
     _TRAIN = json.load(f)
 

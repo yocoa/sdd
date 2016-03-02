@@ -4,9 +4,11 @@
 from scipy.spatial.distance import cosine
 import math
 
+import os
 import sys
-sys.path.append('../CharToImage')
-sys.path.append('../ImageToVector')
+_CUR_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(_CUR_DIR + '/../CharToImage')
+sys.path.append(_CUR_DIR + '/../ImageToVector')
 import CharToImage
 import ImageToVector
 
