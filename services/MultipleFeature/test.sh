@@ -5,6 +5,7 @@ cd lib
 Modules=(\
     LexicalFeature\
     NetworkFeature\
+    Characterizer\
 )
 
 num=1
