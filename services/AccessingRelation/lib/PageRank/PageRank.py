@@ -25,10 +25,6 @@ def _build_graph():
 
 def get_weight():
     global _PR
-    tmp = sorted(_PR.iteritems(), key=lambda i:i[1])
-    for i,j in tmp:
-        if not re.match(r'\d+$', i):
-            print i, j
     return _PR
 
 _build_graph()
