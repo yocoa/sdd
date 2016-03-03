@@ -1,4 +1,31 @@
-<div class="rs-card rs-margin-bottom-20" ng-repeat="title in ['基本信息', '基于视觉', '基于多元属性', '基于访问关系']">
-    <strong class="rs-active">{{ title }}</strong>
+<div class="rs-card rs-margin-bottom-20">
+    <label class="rs-active rs-font-size-lg">基本信息</label>
+    <div class="rs-align-center">
+        <img src="/static/img/loading.gif" ng-if="!data.info">
+    </div>
+    <hr class="rs-dashed">
+</div>
+
+<div class="rs-card rs-margin-bottom-20">
+    <label class="rs-active rs-font-size-lg">基于视觉</label>
+    <div class="rs-align-center">
+        <img src="/static/img/loading.gif" ng-if="!data.visual">
+    </div>
+    <hr class="rs-dashed">
+</div>
+
+<div class="rs-card rs-margin-bottom-20">
+    <label class="rs-active rs-font-size-lg">基于多元属性</label>
+    <div class="rs-align-center">
+        <img src="/static/img/loading.gif" ng-if="!data.feature">
+    </div>
+    <hr class="rs-dashed">
+</div>
+
+<div class="rs-card rs-margin-bottom-20">
+    <label class="rs-active rs-font-size-lg">基于访问关系</label>
+    <div class="rs-align-center">
+        <img src="/static/img/loading.gif" ng-if="!data.relation">
+    </div>
     <hr class="rs-dashed">
 </div>
