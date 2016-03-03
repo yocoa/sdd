@@ -1,0 +1,29 @@
+<!doctype html>
+<html ng-app="uiApp">
+<head>
+<title>恶意域名检测</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/static/css/rabbitstrap.css">
+<script src="/static/js/angular.min.js"></script>
+<script src="/static/js/angular-route.min.js"></script>
+<script src="/static/js/angular-animate.min.js"></script>
+<script src="/static/js/app.js"></script>
+</head>
+<body style="background: #eee" ng-controller="RootController">
+    <div style="background: white; padding: 10px;">
+        <a href="/" class="rs-add-block">
+            <img class="rs-logo-circle" src="/static/img/logo.png">
+            <label class="rs-active rs-add-pointer" style="position: absolute; margin-top: px; margin: 15px; font-size: 18px;">恶意域名检测 V1.0</label>
+        </a>
+    </div>
+    <div class="rs-pack-height-30"></div>
+    <div class="rs-container">
+        <div class="rs-align-center">
+            <input type="text" class="rs-input-text" placeholder="输入域名，例如：QQ.COM" style="width: 600px">
+            <button class="rs-btn rs-btn-primary">检测分析</button>
+        </div>
+        <hr style="border-bottom: 1px dashed white" class="rs-margin-top-20 rs-margin-bottom-20">
+        <div ng-view></div>
+    </div>
+</body>
+</html>
