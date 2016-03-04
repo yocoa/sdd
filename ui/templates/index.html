@@ -4,6 +4,7 @@
 <title>恶意域名检测</title>
 <meta charset="utf-8">
 <link rel="stylesheet" href="/static/css/rabbitstrap.css">
+<link rel="stylesheet" href="/static/css/typicons/typicons.min.css">
 <script src="/static/js/angular.min.js"></script>
 <script src="/static/js/angular-route.min.js"></script>
 <script src="/static/js/angular-animate.min.js"></script>
@@ -13,13 +14,15 @@
     <div class="rs-container rs-add-static" style="padding-top: 10px">
         <div class="rs-add-inline-block">
             <a href="/" class="rs-add-block" style="width: 300px">
-                <img class="rs-logo-circle" src="/static/img/logo.png">
-                <label class="rs-active rs-add-pointer" style="position: absolute; margin-top: px; margin: 15px; font-size: 18px;">恶意域名检测 V1.0</label>
+                <img class="rs-logo" src="/static/img/logo.png">
+                <label class="rs-active rs-add-pointer" style="position: absolute; margin-top: px; margin: 15px; font-size: 18px;">
+                    恶意域名检测 <span class="rs-badge rs-badge-primary">V1.0</span>
+                </label>
             </a>
         </div>             
         <div class="rs-add-inline-block" style="position: absolute; margin-top: 10px">
             <input ng-model="query" type="text" class="rs-input-text" placeholder="输入域名，例如：QQ.COM" style="width: 400px">
-            <button class="rs-btn rs-btn-primary" ng-click="searchClickHandler(query)">检测分析</button>
+            <button class="rs-btn rs-btn-primary" ng-click="searchClickHandler(query)">检测</button>
         </div>
     </div>
     <hr>

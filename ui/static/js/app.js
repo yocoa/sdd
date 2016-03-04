@@ -28,16 +28,14 @@ app.controller('HomeController', function() {
 
 app.controller('ResultController', function($scope, $routeParams, HttpService) {
     $scope.data = {
-        info: null,
+        bgp: null,
         visual: null,
         feature: null,
         relation: null,
     };
-    /*
-    HttpService.getInfo(function(data) {
-        $scope.data.info = data;
+    HttpService.getBgp(function(data) {
+        $scope.data.bgp = data;
     }, $routeParams.query);
-    */
     HttpService.getVisual(function(data) {
         $scope.data.visual = data;
     }, $routeParams.query);
@@ -51,6 +49,9 @@ app.controller('ResultController', function($scope, $routeParams, HttpService) {
 
 app.factory('HttpService', function($http) {
     return {
+        getBgp: function(callback, query) {
+            return $http.get('/bgp?query=' + query).success(callback);
+        },
         getVisual: function(callback, query) {
             return $http.get('/visual?query=' + query).success(callback);
         },

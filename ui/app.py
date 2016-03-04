@@ -14,6 +14,7 @@ DEBUG = True
 
 urls = (
     '/', 'index',
+    '/bgp', 'bgp',
     '/visual', 'visual',
     '/feature', 'feature',
     '/relation', 'relation',
@@ -35,40 +36,52 @@ class index:
 '''
 Ajax
 '''
+class bgp:
+    def GET(self):
+        data = web.input(query=None)
+        result = {}
+        if data.query.lower():
+            if DEBUG:
+                time.sleep(10)
+                result = Service.BA.run_test(data.query.lower())
+            else:
+                result = Service.BA.run(data.query.lower())
+        return json.dumps(result)
+
 class visual:
     def GET(self):
         data = web.input(query=None)
         result = {}
-        if data.query:
+        if data.query.lower():
             if DEBUG:
                 time.sleep(10)
-                result = Service.VA.run_test(data.query)
+                result = Service.VA.run_test(data.query.lower())
             else:
-                result = Service.VA.run(data.query)
+                result = Service.VA.run(data.query.lower())
         return json.dumps(result)
 
 class feature:
     def GET(self):
         data = web.input(query=None)
         result = {}
-        if data.query:
+        if data.query.lower():
             if DEBUG:
                 time.sleep(10)
-                result = Service.MA.run_test(data.query)
+                result = Service.MA.run_test(data.query.lower())
             else:
-                result = Service.MA.run(data.query)
+                result = Service.MA.run(data.query.lower())
         return json.dumps(result)
 
 class relation:
     def GET(self):
         data = web.input(query=None)
         result = {}
-        if data.query:
+        if data.query.lower():
             if DEBUG:
                 time.sleep(10)
-                result = Service.AA.run_test(data.query)
+                result = Service.AA.run_test(data.query.lower())
             else:
-                result = Service.AA.run(data.query)
+                result = Service.AA.run(data.query.lower())
         return json.dumps(result)
 
 if __name__ == '__main__':

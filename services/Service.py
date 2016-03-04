@@ -9,3 +9,6 @@ MA = MultipleFeature.Adapter
 
 import AccessingRelation.Adapter
 AA = AccessingRelation.Adapter
+
+import BgpBase.Adapter
+BA = BgpBase.Adapter
