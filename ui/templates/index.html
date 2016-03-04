@@ -22,7 +22,7 @@
                 </a>
             </div>             
             <form class="rs-add-inline-block" style="position: absolute; margin-top: 10px" ng-submit="doSearch(query)">
-                <input ng-model="query" type="text" class="rs-input-text" placeholder="输入域名，例如：QQ.COM" style="width: 400px">
+                <input id="queryBox" ng-model="query" type="text" class="rs-input-text" placeholder="输入域名，例如：QQ.COM" style="width: 400px">
                 <button type="submit" class="rs-btn rs-btn-primary" ng-click="doSearch(query)">开始检测</button>
             </form>
         </div>

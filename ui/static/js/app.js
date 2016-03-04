@@ -15,13 +15,18 @@ app.config(function($routeProvider) {
     {
         controller: 'ResultController',
         templateUrl: '/static/partials/result.html'
-    });
+    })
     .otherwise({ redirectTo: '/home' });
 });
 
-app.controller('RootController', function($rootScope, $location) {
+app.controller('RootController', function($rootScope, $location, $window) {
     $rootScope.doSearch = function(query) {
         $location.path('/result/' + query);
+    };
+    $rootScope.setFocus = function() {
+        var element = $window.document.getElementById('queryBox');
+        if(element)
+            element.focus();
     };
 });
 
@@ -44,6 +49,7 @@ app.controller('ResultController', function($scope, $routeParams, HttpService) {
     HttpService.getBgp(function(data) {
         $scope.data.bgp = data;
     }, $routeParams.query);
+    /*
     HttpService.getVisual(function(data) {
         $scope.data.visual = data;
     }, $routeParams.query);
@@ -53,6 +59,7 @@ app.controller('ResultController', function($scope, $routeParams, HttpService) {
     HttpService.getRelation(function(data) {
         $scope.data.relation = data;
     }, $routeParams.query);
+    */
 });
 
 app.factory('HttpService', function($http) {

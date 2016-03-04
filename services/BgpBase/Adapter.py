@@ -9,7 +9,8 @@ import re
 
 def run(domain):
     result = BgpBase.run(domain)
-    result['dns'] = re.sub(r'\n\s+', '\n', result['dns']) 
+    if result:
+        result['dns'] = re.sub(r'\n\s+', '\n', result['dns']) 
     return result
 
 def run_test(domain):

@@ -10,7 +10,7 @@ import sys
 sys.path.append('../services')
 import Service
 
-DEBUG = True
+DEBUG = False
 
 urls = (
     '/', 'index',
