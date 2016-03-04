@@ -10,5 +10,6 @@ def convert(domain):
     with open(tmp, 'w') as f:
         f.write('%s\tX' % (domain))
     output = os.popen('java -jar %s %s' % (jar_file, tmp)).read()
-    vector = output.split('\n')[0].split('\t')[-1]
+    vector_str = output.split('\n')[0].split('\t')[-1]
+    vector = vector_str.split(',')
     return vector

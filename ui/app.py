@@ -40,13 +40,14 @@ class bgp:
     def GET(self):
         data = web.input(query=None)
         result = {}
-        if data.query.lower():
+        cleand_q = '.'.join(data.query.lower().split('.')[-2:])
+        if cleand_q:
             if DEBUG:
                 #time.sleep(3)
-                result = Service.BA.run_test(data.query.lower())
+                result = Service.BA.run_test(cleand_q)
                 result['site'] = 'http://www.' + result['url']
             else:
-                result = Service.BA.run(data.query.lower())
+                result = Service.BA.run(cleand_q)
         return json.dumps(result)
 
 class visual:
@@ -65,12 +66,13 @@ class feature:
     def GET(self):
         data = web.input(query=None)
         result = {}
-        if data.query.lower():
+        cleand_q = '.'.join(data.query.lower().split('.')[-2:])
+        if cleand_q:
             if DEBUG:
                 #time.sleep(3)
-                result = Service.MA.run_test(data.query.lower())
+                result = Service.MA.run_test(cleand_q)
             else:
-                result = Service.MA.run(data.query.lower())
+                result = Service.MA.run(cleand_q)
         return json.dumps(result)
 
 class relation:
@@ -93,6 +95,7 @@ class relation:
                 new_result = None
                 if q in result:
                     new_result = [result[q] if q in result else None, relations]
+                    return json.dumps(new_result)
                 new_q = 'www.' + q
                 new_result = [result[new_q] if new_q in result else None, relations]
                 return json.dumps(new_result)
@@ -110,6 +113,7 @@ class relation:
                 new_result = None
                 if q in result:
                     new_result = [result[q] if q in result else None, relations]
+                    return json.dumps(new_result)
                 new_q = 'www.' + q
                 new_result = [result[new_q] if new_q in result else None, relations]
                 return json.dumps(new_result)

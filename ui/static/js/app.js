@@ -49,7 +49,6 @@ app.controller('ResultController', function($scope, $routeParams, HttpService) {
     HttpService.getBgp(function(data) {
         $scope.data.bgp = data;
     }, $routeParams.query);
-    /*
     HttpService.getVisual(function(data) {
         $scope.data.visual = data;
     }, $routeParams.query);
@@ -59,7 +58,6 @@ app.controller('ResultController', function($scope, $routeParams, HttpService) {
     HttpService.getRelation(function(data) {
         $scope.data.relation = data;
     }, $routeParams.query);
-    */
 });
 
 app.factory('HttpService', function($http) {

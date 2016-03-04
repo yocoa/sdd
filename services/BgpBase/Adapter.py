@@ -11,7 +11,8 @@ def run(domain):
     result = BgpBase.run(domain)
     if result:
         result['dns'] = re.sub(r'\n\s+', '\n', result['dns']) 
-    return result
+        return result
+    return None
 
 def run_test(domain):
     cur_dir = os.path.dirname(os.path.abspath(__file__))

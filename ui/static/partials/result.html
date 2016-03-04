@@ -16,7 +16,10 @@
         <label class="rs-active rs-add-bold rs-font-size-lg">带外信息</label>
         <div class="rs-align-center rs-margin-top-20">
             <img src="/static/img/loading.gif" ng-if="!data.bgp">
-            <div class="rs-align-left rs-font-size-sm-all" ng-if="data.bgp">
+            <div class="rs-align-left rs-font-size-sm-all" ng-if="data.bgp == 'null'">
+                暂未找到
+            </div>
+            <div class="rs-align-left rs-font-size-sm-all" ng-if="data.bgp && data.bgp != 'null'">
                 <div class="rs-block10">
                     <div class="rs-block10-2 rs-add-bold">Domain</div>
                     <div class="rs-block10-8">{{ data.bgp.url | uppercase }}</div>
@@ -44,18 +47,12 @@
     <div class="rs-card rs-margin-bottom-20" ng-if="currTab == '基于视觉'">
         <label class="rs-active rs-add-bold rs-font-size-lg">基于视觉</label>
         <div class="rs-align-center rs-margin-bottom-50">
-            <img src="/static/img/loading.gif" ng-if="!data.visual">
-            <div ng-if="data.visual[1] > 0">
-                <span class="rs-add-block">
-                    <span class="typcn typcn-tick" style="font-size: 150px; color: green" ng-if="data.visual[2] == 'W'"></span>
-                    <span class="typcn typcn-times" style="font-size: 150px; color: red" ng-if="data.visual[2] == 'B'"></span>
-                </span>
+            <img src="/static/img/loading.gif" ng-if="!data.visual && data.visual != 'null'">
+            <div ng-if="data.visual[1] >= 0">
                 <span style="font-size: 50px" class="rs-add-inline-block">{{ query }}</span>
                 <span class="rs-add-inline-block rs-padding-left-10 rs-padding-right-10">
                     <span class="rs-add-block rs-font-size-lg" style="color: #4579d8">
                         {{ data.visual[1] }}
-                        <span style="color: green" ng-if="data.visual[2] == 'W'">正常</span>
-                        <span style="color: red" ng-if="data.visual[2] == 'B'">不正常</span>
                     </span>
                     <span class="rs-add-block rs-lighten" style="border-top: 3px solid #4579d8">视觉距离最近的域名</span>
                 </span>
@@ -67,7 +64,7 @@
     <div class="rs-card rs-margin-bottom-20" ng-if="currTab == '基于多元属性'">
         <label class="rs-active rs-add-bold rs-font-size-lg">基于多元属性</label>
         <div class="rs-align-center rs-margin-bottom-50">
-            <img src="/static/img/loading.gif" ng-if="!data.feature">
+            <img src="/static/img/loading.gif" ng-if="!data.feature && data.feature != 'null'">
             <div ng-if="data.feature">
                 <span class="rs-add-block">
                     <span class="typcn typcn-tick" style="font-size: 150px; color: green" ng-if="data.feature[0][0] == 'W'"></span>
@@ -82,13 +79,13 @@
     <div class="rs-card rs-margin-bottom-20" ng-if="currTab == '基于访问关系'">
         <label class="rs-active rs-add-bold rs-font-size-lg">基于访问关系</label>
         <div class="rs-align-center rs-margin-bottom-50">
-            <img src="/static/img/loading.gif" ng-if="!data.relation">
+            <img src="/static/img/loading.gif" ng-if="!data.relation && data.relation != 'null'">
             <div ng-if="data.relation" style="overflow: hidden">
                 <span style="font-size: 50px" class="rs-add-inline-block rs-margin-right-20">{{ query }}</span>
                 <span style="font-size: 50px" class="rs-add-inline-block">{{ data.relation[0] }}</span>
                 <span class="rs-add-block" ng-init="rate = data.relation[0] / data.relation[1][0][1]">
-                    <span class="typcn typcn-tick" style="font-size: 50px; color: green" ng-if="rate > 1"></span>
-                    <span class="typcn typcn-times" style="font-size: 50px; color: red" ng-if="rate <= 1"></span>
+                    权值为 {{ data.relation[0] }}
+                    <br/>
                     与权值最低的 {{ data.relation[1][0][0] }}相比：{{ rate }}
                 </span>
                 <div class="rs-pack-height-30"></div>
