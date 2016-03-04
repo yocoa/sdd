@@ -1,6 +1,8 @@
 'use strict';
 
-var app = angular.module('uiApp', ['ngRoute', 'ngAnimate']);
+var app = angular.module('uiApp', ['ngRoute', 'ngAnimate']).config(function($sceProvider) {
+    $sceProvider.enabled(false);
+});
 
 app.config(function($routeProvider) {
     $routeProvider
@@ -14,11 +16,11 @@ app.config(function($routeProvider) {
         controller: 'ResultController',
         templateUrl: '/static/partials/result.html'
     });
-    //.otherwise({ redirectTo: '/home' });
+    .otherwise({ redirectTo: '/home' });
 });
 
 app.controller('RootController', function($rootScope, $location) {
-    $rootScope.searchClickHandler = function(query) {
+    $rootScope.doSearch = function(query) {
         $location.path('/result/' + query);
     };
 });
@@ -27,6 +29,12 @@ app.controller('HomeController', function() {
 });
 
 app.controller('ResultController', function($scope, $routeParams, HttpService) {
+    $scope.currTab = '带外信息';
+    $scope.changeTab = function(tab) {
+        $scope.currTab = tab;
+    };
+    $scope.query = $routeParams.query;
+
     $scope.data = {
         bgp: null,
         visual: null,

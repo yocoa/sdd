@@ -1,31 +1,103 @@
-<div class="rs-card rs-margin-bottom-20">
-    <label class="rs-active rs-font-size-lg">基本信息</label>
+<div style="position: fixed; left: 10px; z-index: 100; border: 1px solid #ddd; padding: 10px; background: #eee">
     <div class="rs-align-center">
-        <img src="/static/img/loading.gif" ng-if="!data.info">
+        <img style="width: 24px; height: 24px" src="/static/img/logo.png">
+        <strong style="float: right; margin-top: 5px">分析结果</strong>
     </div>
-    <hr class="rs-dashed">
+    <hr style="border-bottom: 1px solid #ddd">
+    <div ng-repeat="tab in ['带外信息', '基于视觉', '基于多元属性', '基于访问关系']"
+        class="rs-add-pointer rs-padding-bottom-5 rs-align-left"
+        ng-class="{'rs-active rs-add-bold': tab == currTab}"
+        ng-click="changeTab(tab)">
+        {{ '· ' + tab }}
+    </div>
 </div>
-
-<div class="rs-card rs-margin-bottom-20">
-    <label class="rs-active rs-font-size-lg">基于视觉</label>
-    <div class="rs-align-center">
-        <img src="/static/img/loading.gif" ng-if="!data.visual">
+<div class="rs-margin-left-50">
+    <div class="rs-card rs-margin-bottom-20 animated fadeIn" ng-if="currTab == '带外信息'">
+        <label class="rs-active rs-add-bold rs-font-size-lg">带外信息</label>
+        <div class="rs-align-center rs-margin-top-20">
+            <img src="/static/img/loading.gif" ng-if="!data.bgp">
+            <div class="rs-align-left rs-font-size-sm-all" ng-if="data.bgp">
+                <div class="rs-block10">
+                    <div class="rs-block10-2 rs-add-bold">Domain</div>
+                    <div class="rs-block10-8">{{ data.bgp.url | uppercase }}</div>
+                </div>
+                <div class="rs-block10">
+                    <div class="rs-block10-2 rs-add-bold">IP Info</div>
+                    <div class="rs-block10-8"><pre>{{ data.bgp.ipinfo }}</pre></div>
+                </div>
+                <div class="rs-block10">
+                    <div class="rs-block10-2 rs-add-bold">DNS</div>
+                    <div class="rs-block10-8"><pre>{{ data.bgp.dns }}</pre></div>
+                </div>
+                <div class="rs-block10">
+                    <div class="rs-block10-2 rs-add-bold">Website</div>
+                    <iframe width="100%" height="400px" frameborder="0" scrolling="auto" ng-src="{{ data.bgp.site }}"></iframe>
+                </div>
+                <div class="rs-block10">
+                    <div class="rs-block10-2 rs-add-bold">Whois</div>
+                    <div class="rs-block10-8"><pre style="white-space: pre-wrap">{{ data.bgp.whois }}</pre></div>
+                </div>
+            </div>
+        </div>
     </div>
-    <hr class="rs-dashed">
-</div>
 
-<div class="rs-card rs-margin-bottom-20">
-    <label class="rs-active rs-font-size-lg">基于多元属性</label>
-    <div class="rs-align-center">
-        <img src="/static/img/loading.gif" ng-if="!data.feature">
+    <div class="rs-card rs-margin-bottom-20" ng-if="currTab == '基于视觉'">
+        <label class="rs-active rs-add-bold rs-font-size-lg">基于视觉</label>
+        <div class="rs-align-center rs-margin-bottom-50">
+            <img src="/static/img/loading.gif" ng-if="!data.visual">
+            <div ng-if="data.visual[1] > 0">
+                <span class="rs-add-block">
+                    <span class="typcn typcn-tick" style="font-size: 150px; color: green" ng-if="data.visual[2] == 'W'"></span>
+                    <span class="typcn typcn-times" style="font-size: 150px; color: red" ng-if="data.visual[2] == 'B'"></span>
+                </span>
+                <span style="font-size: 50px" class="rs-add-inline-block">{{ query }}</span>
+                <span class="rs-add-inline-block rs-padding-left-10 rs-padding-right-10">
+                    <span class="rs-add-block rs-font-size-lg" style="color: #4579d8">
+                        {{ data.visual[1] }}
+                        <span style="color: green" ng-if="data.visual[2] == 'W'">正常</span>
+                        <span style="color: red" ng-if="data.visual[2] == 'B'">不正常</span>
+                    </span>
+                    <span class="rs-add-block rs-lighten" style="border-top: 3px solid #4579d8">视觉距离最近的域名</span>
+                </span>
+                <span style="font-size: 50px" class="rs-add-inline-block">{{ data.visual[0] }}</span>
+            </div>
+        </div>
     </div>
-    <hr class="rs-dashed">
-</div>
 
-<div class="rs-card rs-margin-bottom-20">
-    <label class="rs-active rs-font-size-lg">基于访问关系</label>
-    <div class="rs-align-center">
-        <img src="/static/img/loading.gif" ng-if="!data.relation">
+    <div class="rs-card rs-margin-bottom-20" ng-if="currTab == '基于多元属性'">
+        <label class="rs-active rs-add-bold rs-font-size-lg">基于多元属性</label>
+        <div class="rs-align-center rs-margin-bottom-50">
+            <img src="/static/img/loading.gif" ng-if="!data.feature">
+            <div ng-if="data.feature">
+                <span class="rs-add-block">
+                    <span class="typcn typcn-tick" style="font-size: 150px; color: green" ng-if="data.feature[0][0] == 'W'"></span>
+                    <span class="typcn typcn-times" style="font-size: 150px; color: red" ng-if="data.feature[0][0] == 'B'"></span>
+                </span>
+                <span style="font-size: 50px" class="rs-add-inline-block rs-margin-right-20">{{ query }}</span>
+                <span style="font-size: 50px" class="rs-add-inline-block">{{ data.feature[0][1] * 100 }}%</span>
+            </div>
+        </div>
     </div>
-    <hr class="rs-dashed">
+
+    <div class="rs-card rs-margin-bottom-20" ng-if="currTab == '基于访问关系'">
+        <label class="rs-active rs-add-bold rs-font-size-lg">基于访问关系</label>
+        <div class="rs-align-center rs-margin-bottom-50">
+            <img src="/static/img/loading.gif" ng-if="!data.relation">
+            <div ng-if="data.relation" style="overflow: hidden">
+                <span style="font-size: 50px" class="rs-add-inline-block rs-margin-right-20">{{ query }}</span>
+                <span style="font-size: 50px" class="rs-add-inline-block">{{ data.relation[0] }}</span>
+                <span class="rs-add-block" ng-init="rate = data.relation[0] / data.relation[1][0][1]">
+                    <span class="typcn typcn-tick" style="font-size: 50px; color: green" ng-if="rate > 1"></span>
+                    <span class="typcn typcn-times" style="font-size: 50px; color: red" ng-if="rate <= 1"></span>
+                    与权值最低的 {{ data.relation[1][0][0] }}相比：{{ rate }}
+                </span>
+                <div class="rs-pack-height-30"></div>
+                <span class="rs-add-block" style="border-bottom: 1px solid #eee; font-weight: bold; padding: 5px">权值参考</span>
+                <div class="rs-block10 rs-align-left" style="border-bottom: 1px solid #eee; padding: 5px" ng-repeat="item in data.relation[1]">
+                    <div class="rs-block10-5">{{ item[0] }}</div>
+                    <div class="rs-block10-5">{{ item[1] }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

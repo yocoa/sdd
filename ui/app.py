@@ -42,8 +42,9 @@ class bgp:
         result = {}
         if data.query.lower():
             if DEBUG:
-                time.sleep(10)
+                #time.sleep(3)
                 result = Service.BA.run_test(data.query.lower())
+                result['site'] = 'http://www.' + result['url']
             else:
                 result = Service.BA.run(data.query.lower())
         return json.dumps(result)
@@ -54,7 +55,7 @@ class visual:
         result = {}
         if data.query.lower():
             if DEBUG:
-                time.sleep(10)
+                #time.sleep(3)
                 result = Service.VA.run_test(data.query.lower())
             else:
                 result = Service.VA.run(data.query.lower())
@@ -66,7 +67,7 @@ class feature:
         result = {}
         if data.query.lower():
             if DEBUG:
-                time.sleep(10)
+                #time.sleep(3)
                 result = Service.MA.run_test(data.query.lower())
             else:
                 result = Service.MA.run(data.query.lower())
@@ -78,10 +79,40 @@ class relation:
         result = {}
         if data.query.lower():
             if DEBUG:
-                time.sleep(10)
+                #time.sleep(3)
                 result = Service.AA.run_test(data.query.lower())
+                q = data.query.lower()
+                tmp = sorted(result.iteritems(), key=lambda i:i[1])
+                relations = []
+                for domain, weight in tmp:
+                    if '.' in str(domain):
+                        relations.append([domain, weight])
+                    if len(relations) >= 50:
+                        break
+
+                new_result = None
+                if q in result:
+                    new_result = [result[q] if q in result else None, relations]
+                new_q = 'www.' + q
+                new_result = [result[new_q] if new_q in result else None, relations]
+                return json.dumps(new_result)
             else:
                 result = Service.AA.run(data.query.lower())
+                q = data.query.lower()
+                tmp = sorted(result.iteritems(), key=lambda i:i[1])
+                relations = []
+                for domain, weight in tmp:
+                    if '.' in str(domain):
+                        relations.append([domain, weight])
+                    if len(relations) >= 50:
+                        break
+
+                new_result = None
+                if q in result:
+                    new_result = [result[q] if q in result else None, relations]
+                new_q = 'www.' + q
+                new_result = [result[new_q] if new_q in result else None, relations]
+                return json.dumps(new_result)
         return json.dumps(result)
 
 if __name__ == '__main__':
