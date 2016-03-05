@@ -25,6 +25,7 @@ app = web.application(urls, globals())
 class MyWebServer(threading.Thread):
     def run(self):
         app.run()
+        print 'Served!'
 
 '''
 View
@@ -89,7 +90,7 @@ class relation:
                 for domain, weight in tmp:
                     if '.' in str(domain):
                         relations.append([domain, weight])
-                    if len(relations) >= 50:
+                    if len(relations) >= 5000:
                         break
 
                 new_result = None
@@ -107,7 +108,7 @@ class relation:
                 for domain, weight in tmp:
                     if '.' in str(domain):
                         relations.append([domain, weight])
-                    if len(relations) >= 50:
+                    if len(relations) >= 5000:
                         break
 
                 new_result = None

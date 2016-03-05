@@ -21,6 +21,9 @@ app.config(function($routeProvider) {
 
 app.controller('RootController', function($rootScope, $location, $window) {
     $rootScope.doSearch = function(query) {
+        if(!query || query.indexOf('.') < 0) {
+            return;
+        }
         $location.path('/result/' + query);
     };
     $rootScope.setFocus = function() {

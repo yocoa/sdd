@@ -83,16 +83,15 @@
             <div ng-if="data.relation" style="overflow: hidden">
                 <span style="font-size: 50px" class="rs-add-inline-block rs-margin-right-20">{{ query }}</span>
                 <span style="font-size: 50px" class="rs-add-inline-block">{{ data.relation[0] }}</span>
-                <span class="rs-add-block" ng-init="rate = data.relation[0] / data.relation[1][0][1]">
-                    权值为 {{ data.relation[0] }}
-                    <br/>
-                    与权值最低的 {{ data.relation[1][0][0] }}相比：{{ rate }}
+                <span class="rs-add-block">
+                    {{ data.relation[0] ? '权值为：' + data.relation[0] : '' }}
                 </span>
                 <div class="rs-pack-height-30"></div>
                 <span class="rs-add-block" style="border-bottom: 1px solid #eee; font-weight: bold; padding: 5px">权值参考</span>
                 <div class="rs-block10 rs-align-left" style="border-bottom: 1px solid #eee; padding: 5px" ng-repeat="item in data.relation[1]">
+                    <div class="rs-block10-1">{{ $index }}</div>
                     <div class="rs-block10-5">{{ item[0] }}</div>
-                    <div class="rs-block10-5">{{ item[1] }}</div>
+                    <div class="rs-block10-4">{{ item[1] }}</div>
                 </div>
             </div>
         </div>

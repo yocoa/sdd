@@ -15,7 +15,10 @@ def _build_graph():
     global _PR
 
     with open(_G_FILE, 'r') as f:
-        for line in f:
+        for i, line in enumerate(f):
+            if i > 1000000:
+                print 'Too many records!'
+                break
             try:
                 uid, domain = line.strip().split(' ')
                 _G.add_edge(uid, domain.lower())
