@@ -4,9 +4,9 @@
 from lib.PageRank import PageRank
 
 def run(*args):
-    pr = PageRank.get_weight()
-    return pr
+    pr, mapper = PageRank.get_weight()
+    return pr, mapper
 
 def run_test(*args):
-    pr = PageRank.get_weight()
-    return pr
+    pr, mapper = PageRank.get_weight()
+    return pr, mapper
