@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import sys
+import re
 
 from lib import DataBox
 import subprocess
@@ -38,10 +39,8 @@ if __name__ == '__main__':
 
     if selection == 'default':
         arff_filename = DataBox.run(load_train('train/'), load_data('data/')[:int(number)])
-    print arff_filename
     cmd = 'java -classpath lib/weka.jar weka.classifiers.trees.RandomForest -t %s -i' % arff_filename
     output = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
-    print output
-
-
-
+    tmp = re.search(r'Weighted Avg\.(.*\..*)', output).group(1).strip()
+    p, r, f1 = re.split(r'\s+', tmp)[2:5]
+    print '\t'.join([selection, number, p, r, f1])
