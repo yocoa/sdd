@@ -232,7 +232,7 @@ if __name__ == '__main__':
         kms = KMeansSelector(data)
         x = kms.select(number, 10)
         start_time = time.time()
-        arff_filename = DataBox.run(load_train('train/'), x, selection)
+        arff_filename = DataBox.run(train, x, selection)
         delta = time.time() - start_time
 
     if selection == 'topk2':
@@ -244,7 +244,7 @@ if __name__ == '__main__':
         kms = KMeansSelector(data)
         x = kms.select(number, 10)
         start_time = time.time()
-        arff_filename = DataBox.run(load_train('train/'), x, selection)
+        arff_filename = DataBox.run(train, x, selection)
         delta = time.time() - start_time
 
     cmd = 'java -classpath lib/weka.jar weka.classifiers.trees.RandomForest -t %s -i' % arff_filename
