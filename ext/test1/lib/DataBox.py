@@ -11,12 +11,15 @@ def get_distances(domain, domain_list):
         distances.append(editdistance.eval(domain, d))
     return distances
 
-def run(train_list, data_list, nolexical=False):
+def run(train_list, data_list, selection):
+    assert selection in ['lexical', 'topk', 'kmeans', 'topk2', 'kmeans2']
     line_list = []
     for domain, label in train_list:
-        if nolexical:
+        if selection == 'lexical':
+            v = LF.get_feature(domain)
+        if selection in ['topk', 'kmeans']:
             v = get_distances(domain, data_list)
-        else:
+        if selection in ['topk2', 'kmeans2']:
             v = LF.get_feature(domain)
             distances = get_distances(domain, data_list)
             v = distances + v#long vector(lexical + distances)

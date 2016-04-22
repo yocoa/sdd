@@ -7,14 +7,17 @@ import random
 import json
 import os
 import time
+import editdistance
 
 from lib import DataBox
 import subprocess
 
-def load_train(path):
+def load_train(path, train_selection):
     train_list = []
-    #filenames = ['lexical.bad', 'lexical.good', 'type.bad', 'type.good']
-    filenames = ['raw.B', 'raw.W']
+
+    assert train_selection in ['small', 'large']
+    filenames = [train_selection + '.B', train_selection + '.W']
+
     for name in filenames:
         with open('/'.join([path, name]), 'r') as f:
             for line in f:
@@ -50,7 +53,7 @@ class KMeansSelector(object):
             print 'Generating caceh...'
             with open(cache_file, 'w') as f:
                 m = len(self._domain_list)
-                self._dist = [[self._edit_dis(self._domain_list[i], self._domain_list[j]) for j in range(m)] for i in range(m)]
+                self._dist = [[editdistance.eval(self._domain_list[i], self._domain_list[j]) for j in range(m)] for i in range(m)]
                 f.write(json.dumps(self._dist))
 
 
@@ -111,99 +114,141 @@ class KMeansSelector(object):
             centers, cost = new_centers, new_cost
         return [self._domain_list[i] for i in centers], cost
 
+class HierarchicalSelector(object):
+
+    def __init__(self, domain_list, strategy=None):
+        print 'init!'
+
+        self._domain_list = [d for d in domain_list]
+        cache_file = 'cache.json'
+
+        if strategy is None:
+            strategy = "single"
+        self._strategy = self._single_strategy
+
+        if os.path.exists(cache_file):
+            with open(cache_file, 'r') as f:
+                self._dist = json.loads(f.read())
+        else:
+            print 'Generating caceh...'
+            with open(cache_file, 'w') as f:
+                m = len(self._domain_list)
+                self._dist = []
+                for i in range(m):
+                    self._dist.append([editdistance.eval(self._domain_list[i], self._domain_list[j]) for j in range(m)])
+                f.write(json.dumps(self._dist))
+
+    """
+    n: 聚类的簇的数量
+
+    返回n个簇的质心域名的列表，以及最优的代价
+    """
+    def select(self, n):
+        print 'select'
+        m = len(self._domain_list)
+        assert m >= n, "The parameter 'n' cannot be larger than the number of domains"
+        cluster = [[i] for i in range(m)]
+        
+        count = 0
+        while m > n:
+            print count
+            count+=1
+
+            cost, pi, pj = None, None, None
+            for i in range(m - 1):
+                for j in range(i + 1, m):
+                    c = self._strategy(cluster[i], cluster[j])
+                    if cost is None or c < cost:
+                        cost, pi, pj = c, i, j
+            for x in cluster[pj]:
+                cluster[pi].append(x)
+            cluster.pop(pj)
+            m -= 1
+        # print cluster
+        res = []
+        for i in range(m):
+            min_s, id = None, None
+            for j in cluster[i]:
+                s = 0
+                for k in cluster[i]:
+                    s += self._dist[j][k]
+                if min_s is None or s < min_s:
+                    min_s, id = s, j
+            res.append(self._domain_list[id])
+        return res
+
+    def _single_strategy(self, v1, v2):
+        res = None
+        for i in v1:
+            for j in v2:
+                d = self._dist[i][j]
+                if res is None or d < res:
+                    res = d
+        return res
+
     """
     计算两个字符串的编辑距离
     """
     @staticmethod
-    def _edit_dis(a, b):
-        na = len(a)
-        nb = len(b)
-        f = [[0 for j in range(nb + 1)] for i in range(na + 1)]
-        for i in range(na):
-            f[i][-1] = i + 1
-        for i in range(nb):
-            f[-1][i] = i + 1
-        for i in range(na):
-            for j in range(nb):
-                if a[i] == b[j]:
-                    f[i][j] = f[i - 1][j - 1]
-                else:
-                    f[i][j] = min(f[i - 1][j] + 1, f[i][j - 1] + 1, f[i - 1][j - 1] + 1)
-        return f[na - 1][nb - 1]
-
+    def _edit_dis(s, t):
+        if s == t:
+            return 0
+        if len(s) == 0:
+            return len(t)
+        elif len(t) == 0:
+            return len(s)
+        v0 = [None] * (len(t) + 1)
+        v1 = [None] * (len(t) + 1)
+        for i in range(len(v0)):
+            v0[i] = i
+        for i in range(len(s)):
+            v1[0] = i + 1
+            for j in range(len(t)):
+                cost = 0 if s[i] == t[j] else 1
+                v1[j + 1] = min(v1[j] + 1, v0[j + 1] + 1, v0[j] + cost)
+            for j in range(len(v0)):
+                v0[j] = v1[j]
+        return v1[len(t)]
 
 if __name__ == '__main__':
-    selection, number = 'default', '30'
-    if len(sys.argv) > 2:
-        selection, number = sys.argv[1], int(sys.argv[2])
+    train_selection, selection, number = 'small', 'lexical', '30'
+    if len(sys.argv) > 3:
+        train_selection, selection, number = sys.argv[1], sys.argv[2], int(sys.argv[3])
 
-    train = load_train('train/')
+    train = load_train('train/', train_selection)
     data = load_data('data/')
 
-    flag = True
-    if selection == 'default':
+    if selection == 'lexical':
         start_time = time.time()
-        arff_filename = DataBox.run(train, data[:number], nolexical=True)
-        delta = time.time() - start_time
-    if selection == 'random':
-        copied_data = [i for i in data]
-        random.shuffle(copied_data)
-        start_time = time.time()
-        arff_filename = DataBox.run(train, copied_data[:number], nolexical=True)
+        arff_filename = DataBox.run(train, data[:number], selection)
         delta = time.time() - start_time
 
-        cmd = 'java -classpath lib/weka.jar weka.classifiers.trees.RandomForest -t %s -i' % arff_filename
-        output = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
-        tmp = re.search(r'Weighted Avg\.(.*\..*)', output).group(1).strip()
-        p, r, f1 = re.split(r'\s+', tmp)[2:5]
-        print '\t'.join([selection, str(number), p, r, f1, str(delta)])
-
+    if selection == 'topk':
         start_time = time.time()
-        arff_filename = DataBox.run(train, copied_data[:number], nolexical=False)
+        arff_filename = DataBox.run(train, data[:number], selection)
         delta = time.time() - start_time
-        cmd = 'java -classpath lib/weka.jar weka.classifiers.trees.RandomForest -t %s -i' % arff_filename
-        output = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
-        tmp = re.search(r'Weighted Avg\.(.*\..*)', output).group(1).strip()
-        p, r, f1 = re.split(r'\s+', tmp)[2:5]
-        print '\t'.join([selection + '2', str(number), p, r, f1, str(delta)])
 
-        flag = False
-    if selection == 'cluster':
+    if selection == 'kmeans':
         kms = KMeansSelector(data)
-        x = kms.select(number, 3)
+        x = kms.select(number, 10)
         start_time = time.time()
-        arff_filename = DataBox.run(load_train('train/'), x, nolexical=True)
-        delta = time.time() - start_time
-        cmd = 'java -classpath lib/weka.jar weka.classifiers.trees.RandomForest -t %s -i' % arff_filename
-        output = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
-        tmp = re.search(r'Weighted Avg\.(.*\..*)', output).group(1).strip()
-        p, r, f1 = re.split(r'\s+', tmp)[2:5]
-        print '\t'.join([selection, str(number), p, r, f1, str(delta)])
-
-        start_time = time.time()
-        arff_filename = DataBox.run(load_train('train/'), x, nolexical=False)
-        delta = time.time() - start_time
-        cmd = 'java -classpath lib/weka.jar weka.classifiers.trees.RandomForest -t %s -i' % arff_filename
-        output = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
-        tmp = re.search(r'Weighted Avg\.(.*\..*)', output).group(1).strip()
-        p, r, f1 = re.split(r'\s+', tmp)[2:5]
-        print '\t'.join([selection + '2', str(number), p, r, f1, str(delta)])
-
-        flag = False
-
-    if selection == 'default2':
-        start_time = time.time()
-        arff_filename = DataBox.run(train, data[:number], nolexical=False)
+        arff_filename = DataBox.run(load_train('train/'), x, selection)
         delta = time.time() - start_time
 
-    if selection == 'onlylexical':
+    if selection == 'topk2':
         start_time = time.time()
-        arff_filename = DataBox.run(train, data[:number], nolexical=False)
+        arff_filename = DataBox.run(train, data[:number], selection)
         delta = time.time() - start_time
 
-    if flag:
-        cmd = 'java -classpath lib/weka.jar weka.classifiers.trees.RandomForest -t %s -i' % arff_filename
-        output = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
-        tmp = re.search(r'Weighted Avg\.(.*\..*)', output).group(1).strip()
-        p, r, f1 = re.split(r'\s+', tmp)[2:5]
-        print '\t'.join([selection, str(number), p, r, f1, str(delta)])
+    if selection == 'kmeans2':
+        kms = KMeansSelector(data)
+        x = kms.select(number, 10)
+        start_time = time.time()
+        arff_filename = DataBox.run(load_train('train/'), x, selection)
+        delta = time.time() - start_time
+
+    cmd = 'java -classpath lib/weka.jar weka.classifiers.trees.RandomForest -t %s -i' % arff_filename
+    output = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
+    tmp = re.search(r'Weighted Avg\.(.*\..*)', output).group(1).strip()
+    p, r, f1 = re.split(r'\s+', tmp)[2:5]
+    print '\t'.join([selection, str(number), p, r, f1, str(delta)])
