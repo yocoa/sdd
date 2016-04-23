@@ -249,6 +249,7 @@ if __name__ == '__main__':
 
     cmd = 'java -classpath lib/weka.jar weka.classifiers.trees.RandomForest -t %s -i' % arff_filename
     output = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
+    #print output
     tmp = re.search(r'Weighted Avg\.(.*\..*)', output).group(1).strip()
     p, r, f1 = re.split(r'\s+', tmp)[2:5]
     print '\t'.join([selection, str(number), p, r, f1, str(delta)])

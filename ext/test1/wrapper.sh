@@ -18,12 +18,10 @@ function method()
         ((number+=50))
     done
 }
-
-method large lexical
-method large topk
-method large kmeans
-method large topk2
-method large kmeans2
+#method large lexical
+#method large topk
+#method large topk2
+#method large kmeans2
 
 method small topk2
 method small kmeans2
